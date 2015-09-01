@@ -1,0 +1,11 @@
+[package]
+name = "yog"
+version = "0.1.0"
+authors = ["yujianxin <yujianxin@szxhinfo.com>"]
+[dependencies]
+nickel = "*"
+
+[dependencies.markdown]
+git = "https://github.com/johannhof/markdown.rs.git"
+
+

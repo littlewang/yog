@@ -1,0 +1,35 @@
+#[macro_use] extern crate nickel;
+extern crate markdown;
+
+
+
+use nickel::Nickel;
+
+
+
+fn main() {
+
+
+    let mut server = Nickel::new();
+
+
+    //outprint html by markdown
+
+    let html : String = markdown::to_html("__I am markdown__");
+
+    println!(html.to_string());
+
+
+    server.utilize(router! {
+        get "**" => |_req, _res| {
+         "Hello world!"
+        //html.to_string()
+        }
+
+    });
+
+
+    server.listen("127.0.0.1:6767");
+
+
+}
