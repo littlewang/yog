@@ -1,6 +1,6 @@
 #[macro_use] extern crate nickel;
 
-use nickel::{Nickel, HttpRouter, JsonBody};
+use nickel::{Nickel, HttpRouter, JsonBody,StaticFilesHandler};
 
 extern crate markdown;
 
@@ -10,8 +10,11 @@ extern crate rustc_serialize;
 
 
 use std::error::Error;
+
 use std::fs::File;
+
 use std::io::prelude::*;
+
 use std::path::Path;
 
 
@@ -39,7 +42,6 @@ content:Option<String>,
 
 //mysql db
 fn  conn_db()->MyPool{
-
         println!("PORT IS {}", "3306");
         let opts = MyOpts {
               user: Some("root".to_string()),
@@ -49,29 +51,21 @@ fn  conn_db()->MyPool{
         };
         let pool = MyPool::new(opts).unwrap();
         return pool;
-
-
-
-
 }
 
-
 // function with args
-fn insertBlog(blog:Blog,pool:MyPool){
+
+fn insertBlog(blog:Blog){
+    let  pool=conn_db();
 
 let mut stmt0 = pool.prepare(r"INSERT INTO blog (title,content) VALUES (?,?,?)").unwrap();
 
 stmt0.execute((blog.title,blog.content)).unwrap();
 
-
 }
 
 
-
-
 fn main() {
-
-    let  pool=conn_db();
 
     let mut server = Nickel::new();
 
@@ -101,19 +95,22 @@ fn main() {
 
     server.post("/addBlog",middleware!{|request,response|
 
+        // let log = request.json_as::<Blog>().unwrap();
+        // insert bolg
+        // insertBlog(log);
+        // format!("Hello {}", request.param("title").unwrap())
+        println!("logging request: {:?}", request.param("title"));
 
-        let log = request.json_as::<Blog>().unwrap();
-
-
-        //insert bolg
-        insertBlog(log,pool);
-
+        format!("You didn't provide any foo values!")
 
         });
 
-
     server.get("/",middleware!(&*s));
 
+
+    // server.get("/back",);
+
+    server.utilize(StaticFilesHandler::new("pages/assets/"));
 
 
     server.listen("127.0.0.1:6767");
